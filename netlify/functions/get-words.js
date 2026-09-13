@@ -1,11 +1,18 @@
 exports.handler = async (event, context) => {
   const headers = {
     "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Content-Type": "application/json"
   };
 
+  if (event.httpMethod === "OPTIONS") {
+    return { statusCode: 200, headers, body: "" };
+  }
+
   try {
-    const AIRTABLE_API_KEY = "pat0mNUzHcQAZGfgC.5f789bbda206b872abf9bdc7480180d04449e4c31e1684ec57bb9ba3c4259f02";
+    // THAY TOKEN MỚI VÀO ĐÂY:
+    const AIRTABLE_API_KEY = "pat2TJXzi0ZeWigYq";
     const AIRTABLE_BASE_ID = "apphLkS11JfGCY1v4";
     const TABLE_NAME = "Vocabulary";
 
@@ -15,23 +22,32 @@ exports.handler = async (event, context) => {
 
     const data = await res.json();
 
-    // In thẳng phản hồi của Airtable lên trình duyệt để kiểm tra
+    // Nếu vẫn lỗi thì hiện chi tiết để kiểm tra
     if (!res.ok) {
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify({ "Lỗi_Từ_Airtable": data }, null, 2)
+        body: JSON.stringify({ "Lỗi_Từ_Airtable": data })
       };
     }
 
+    // Chuyển đổi dữ liệu bảng
     const words = (data.records || []).map(record => ({
       word: record.fields.Word || "",
       meaning: record.fields.Meaning || "",
       date: record.fields.Date || record.fields["Date Added"] || ""
     }));
 
-    return { statusCode: 200, headers, body: JSON.stringify(words) };
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify(words)
+    };
   } catch (error) {
-    return { statusCode: 200, headers, body: JSON.stringify({ error: error.message }) };
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({ error: error.message })
+    };
   }
 };
