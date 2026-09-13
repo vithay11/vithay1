@@ -2,14 +2,59 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Từ vựng của tôi</title>
+  <title>Sổ Từ Vựng Của Tôi</title>
   <style>
-    body { font-family: sans-serif; margin: 40px; line-height: 1.6; }
-    code { background: #f4f4f4; padding: 4px 8px; border-radius: 4px; }
+    body { font-family: Arial, sans-serif; margin: 40px; background-color: #f9f9f9; }
+    h1 { color: #333; }
+    table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
+    th { background-color: #0070f3; color: white; }
+    tr:hover { background-color: #f1f1f1; }
   </style>
 </head>
 <body>
-  <h1>Server API từ vựng đang hoạt động!</h1>
-  <p>Endpoint nhận dữ liệu từ Extension: <code>/.netlify/functions/save-word</code></p>
+  <h1>📚 Sổ Từ Vựng Đã Lưu</h1>
+  <table id="vocabTable">
+    <thead>
+      <tr>
+        <th>Từ gốc</th>
+        <th>Nghĩa tiếng Việt</th>
+        <th>Ngày lưu</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+      <tr><td colspan="3">Đang tải dữ liệu...</td></tr>
+    </tbody>
+  </table>
+
+  <script>
+    async function loadWords() {
+      try {
+        const res = await fetch('/.netlify/functions/get-words');
+        const words = await res.json();
+        
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+
+        if (words.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="3">Chưa có từ vựng nào được lưu.</td></tr>';
+          return;
+        }
+
+        words.forEach(item => {
+          const row = `<tr>
+            <td><b>${item.word || ''}</b></td>
+            <td>${item.meaning || ''}</td>
+            <td>${item.date || ''}</td>
+          </tr>`;
+          tbody.innerHTML += row;
+        });
+      } catch (err) {
+        document.getElementById('tableBody').innerHTML = '<tr><td colspan="3">Lỗi tải dữ liệu!</td></tr>';
+      }
+    }
+
+    loadWords();
+  </script>
 </body>
 </html>
