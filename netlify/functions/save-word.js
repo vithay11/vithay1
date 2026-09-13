@@ -19,7 +19,7 @@ exports.handler = async (event, context) => {
     const { word, meaning } = JSON.parse(event.body);
 
     // 2. Khai báo thông tin Airtable
-    const AIRTABLE_API_KEY = "pat0mNUzHcQAZGfgC.5f789bbda206b872abf9bdc7480180d04449e4c31e1684ec57bb9ba3c4259f02";
+    const AIRTABLE_API_KEY = "pat2TJXzi0ZeWigYq.5ee1c1ad12870ed5f451a03ac549c12d4189a1d4520aee3ce7c52a6e986be3e4";
     const AIRTABLE_BASE_ID = "apphLkS11JfGCY1v4";
 
     // 3. Gọi API Airtable (Dùng đúng tên biến ở dòng 12 và 13)
