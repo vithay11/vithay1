@@ -13,7 +13,7 @@ exports.handler = async (event, context) => {
   try {
     // THAY TOKEN MỚI VÀO ĐÂY:
     const AIRTABLE_API_KEY = "pat2TJXzi0ZeWigYq.6a91262dea0f761b6566f8d04b3f940e43e7017f15a91a0d4711bb0ff9f8a36f";
-    const AIRTABLE_BASE_ID = "apphLkS11JfGCY1v4";
+    const AIRTABLE_BASE_ID = "apphLkSl1JfGCY1v4";
     const TABLE_NAME = "Vocabulary";
 
     const res = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(TABLE_NAME)}`, {
