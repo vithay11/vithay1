@@ -1,42 +1,26 @@
 exports.handler = async (event, context) => {
-  console.log("--- Bắt đầu gọi hàm get-words ---");
-
   const headers = {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Content-Type": "application/json"
   };
 
-  if (event.httpMethod === "OPTIONS") {
-    return { statusCode: 200, headers, body: "" };
-  }
-
   try {
-    const AIRTABLE_API_KEY = "pat2TJXzi0ZeWigYq.5ee1c1ad12870ed5f451a03ac549c12d4189a1d4520aee3ce7c52a6e986be3e4";
+    const AIRTABLE_API_KEY = "pat0mNUzHcQAZGfgC.5f789bbda206b872abf9bdc7480180d04449e4c31e1684ec57bb9ba3c4259f02";
     const AIRTABLE_BASE_ID = "apphLkS11JfGCY1v4";
     const TABLE_NAME = "Vocabulary";
 
-    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(TABLE_NAME)}`;
-    console.log("Đang gọi Airtable URL:", url);
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${AIRTABLE_API_KEY}`,
-        "Content-Type": "application/json"
-      }
+    const res = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(TABLE_NAME)}`, {
+      headers: { "Authorization": `Bearer ${AIRTABLE_API_KEY}` }
     });
 
-    const data = await response.json();
-    console.log("Trạng thái Airtable trả về:", response.status);
+    const data = await res.json();
 
-    if (!response.ok) {
-      console.error("Airtable báo lỗi:", data);
+    // In thẳng phản hồi của Airtable lên trình duyệt để kiểm tra
+    if (!res.ok) {
       return {
-        statusCode: response.status,
+        statusCode: 200,
         headers,
-        body: JSON.stringify({ error: data.error || "Lỗi từ Airtable" })
+        body: JSON.stringify({ "Lỗi_Từ_Airtable": data }, null, 2)
       };
     }
 
@@ -46,19 +30,8 @@ exports.handler = async (event, context) => {
       date: record.fields.Date || record.fields["Date Added"] || ""
     }));
 
-    console.log("Lấy thành công số từ vựng:", words.length);
-
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify(words)
-    };
+    return { statusCode: 200, headers, body: JSON.stringify(words) };
   } catch (error) {
-    console.error("Lỗi trong quá trình xử lý:", error.message);
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: error.message })
-    };
+    return { statusCode: 200, headers, body: JSON.stringify({ error: error.message }) };
   }
 };
