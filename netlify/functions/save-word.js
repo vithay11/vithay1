@@ -20,7 +20,7 @@ exports.handler = async (event, context) => {
 
     // 2. Khai báo thông tin Airtable
     const AIRTABLE_API_KEY = "pat2TJXzi0ZeWigYq.6a91262dea0f761b6566f8d04b3f940e43e7017f15a91a0d4711bb0ff9f8a36f";
-    const AIRTABLE_BASE_ID = "apphLkS11JfGCY1v4";
+    const AIRTABLE_BASE_ID = "apphLkSl1JfGcY1v4";
 
     // 3. Gọi API Airtable (Dùng đúng tên biến ở dòng 12 và 13)
     const response = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/Vocabulary`, {
