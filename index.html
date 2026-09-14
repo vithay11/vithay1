@@ -2,59 +2,68 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sổ Từ Vựng Của Tôi</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 40px; background-color: #f9f9f9; }
-    h1 { color: #333; }
-    table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
-    th { background-color: #0070f3; color: white; }
-    tr:hover { background-color: #f1f1f1; }
+    * { box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; }
+    .container { max-width: 900px; margin: 20px auto; background: #ffffff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    h1 { color: #1a73e8; margin-top: 0; font-size: 24px; display: flex; align-items: center; gap: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #e0e0e0; padding: 14px; text-align: left; }
+    th { background-color: #1a73e8; color: white; font-weight: 600; }
+    tr:nth-child(even) { background-color: #f8f9fa; }
+    tr:hover { background-color: #f1f3f4; }
+    .status-msg { text-align: center; padding: 20px; color: #666; font-style: italic; }
+    .error { color: #d93025; font-weight: bold; }
   </style>
 </head>
 <body>
-  <h1>📚 Sổ Từ Vựng Đã Lưu</h1>
-  <table id="vocabTable">
-    <thead>
-      <tr>
-        <th>Từ gốc</th>
-        <th>Nghĩa tiếng Việt</th>
-        <th>Ngày lưu</th>
-      </tr>
-    </thead>
-    <tbody id="tableBody">
-      <tr><td colspan="3">Đang tải dữ liệu...</td></tr>
-    </tbody>
-  </table>
+  <div class="container">
+    <h1>📚 Sổ Từ Vựng Đã Lưu</h1>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 30%;">Từ gốc</th>
+          <th style="width: 45%;">Nghĩa tiếng Việt</th>
+          <th style="width: 25%;">Ngày lưu</th>
+        </tr>
+      </thead>
+      <tbody id="vocab-table">
+        <tr><td colspan="3" class="status-msg">⏳ Đang tải dữ liệu từ Google Sheets...</td></tr>
+      </tbody>
+    </table>
+  </div>
 
   <script>
-    async function loadWords() {
-      try {
-        const res = await fetch('/.netlify/functions/get-words');
-        const words = await res.json();
-        
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = '';
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwF0Fk0904GnyomRvaqo5vAggzeJxcVph94jVRn8lyAy9fIayXLGR9YCFz3r4oHbt4IXg/exec";
 
-        if (words.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="3">Chưa có từ vựng nào được lưu.</td></tr>';
+    async function loadVocabulary() {
+      const tableBody = document.getElementById("vocab-table");
+      try {
+        const response = await fetch(SCRIPT_URL);
+        const words = await response.json();
+
+        if (!Array.isArray(words) || words.length === 0) {
+          tableBody.innerHTML = '<tr><td colspan="3" class="status-msg">Chưa có từ vựng nào được lưu.</td></tr>';
           return;
         }
 
-        words.forEach(item => {
-          const row = `<tr>
-            <td><b>${item.word || ''}</b></td>
+        tableBody.innerHTML = words.map(item => `
+          <tr>
+            <td><strong>${item.word || ''}</strong></td>
             <td>${item.meaning || ''}</td>
             <td>${item.date || ''}</td>
-          </tr>`;
-          tbody.innerHTML += row;
-        });
-      } catch (err) {
-        document.getElementById('tableBody').innerHTML = '<tr><td colspan="3">Lỗi tải dữ liệu!</td></tr>';
+          </tr>
+        `).join('');
+      } catch (error) {
+        console.error("Lỗi kết nối:", error);
+        tableBody.innerHTML = '<tr><td colspan="3" class="status-msg error">❌ Lỗi tải dữ liệu từ Google Sheets!</td></tr>';
       }
     }
 
-    loadWords();
+    // Tự động tải từ vựng khi mở trang
+    loadVocabulary();
   </script>
 </body>
 </html>
